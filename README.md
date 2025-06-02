@@ -91,28 +91,108 @@ yarn upgrade
 yarn add next@latest viem@latest
 ```
 
-Go back to main directory and run the node
+Update repository
+
+```bash
+cd rl-swarm  
+git switch main  
+git reset --hard  
+git clean -fd  
+git pull origin main
+```
+
+Run the node
 
 ```bash
 cd ..  
 ./run_rl_swarm.sh
 ```
 
-## Login & Web Interface
+Answer the Prompts
+When prompted, respond exactly like this:
 
-After node starts, a web pop-up will appear. If not, open manually:
+- Would you like to connect to the Testnet? → Y
+
+- Which swarm would you like to join (Math (A) or Math Hard (B))? → A
+
+- How many parameters (in billions)? → 0.5 (or as per your choice)
+
+⚠️ Important: After this, it will start building the server. This takes a long time.
+
+But here do some magic we leave this terminal as it is and we will open a new terminal of the same vps and execute some commands
+
+## 🔥 Additional Setup Steps
+
+First, ensure nano is installed (if you get "command not found" error):
 
 ```bash
-http://localhost:3000/
+sudo apt install nano
 ```
 
-Login with your email → Enter OTP → Get your ORG_ID from terminal → Save it
+Go to the project directory
 
-### Hugging Face Prompt
+```bash
+cd rl-swarm
+```
+
+head to the config file and make some critical changes:
+
+```bash
+nano hivemind_exp/configs/mac/grpo-qwen-2.5-0.5b-deepseek-r1.yaml
+```
+
+Inside the file, use your keyboard arrows to navigate and edit these values:
+
+```bash
+torch_dtype: float32
+bf16: false
+tf32: false
+gradient_checkpointing: false
+per_device_train_batch_size: 1
+```
+
+✅ After editing, press:
+
+Ctrl + X → Exit
+
+Y → Yes
+
+Enter → Save
+
+## Make Magic: Bypass Slow Web Login
+
+Open a new terminal tab on your VPS. In this new tab
+Install LocalTunnel:
+
+```bash
+npm install -g localtunnel
+```
+
+Start LocalTunnel:
+
+```bash
+lt --port 3000
+```
+
+Copy the generated localhost URL and open it in your browser.
+Sign up, complete the login process, and you're done!
+
+After login, you can close this tab and go back to the main terminal (the one building the server).
 
 
-- When asked Push models to Hugging Face? → Type `N`
-- For W&B Integration → Type `3` for Don't visualize my results (or `1` if you want tracking)
+## Final Prompts (Back in Main Terminal)
+
+Once the server finishes downloading and setting up, you’ll see more prompts:
+
+Would you like to push models you train in the RL swarm to the Hugging Face Hub? → N
+
+W&B Account integration → 3 (Don't visualize my results)
+
+⚠️ Copy your Node Name and Peer ID. Save them somewhere safe—these are used to check your node status later.
+
+
+
+
 
 
 ### Manage Node & Screen Session
@@ -134,31 +214,12 @@ Copy file from VPS to local machine:
 scp USERNAME@YOUR_IP:~/rl-swarm/swarm.pem ~/swarm.pem
 ```
 
-## 🔄 Update to Latest Release (v0.4.3)
+## Check Node Status
 
-Access screen session
-
-```bash
-screen -r gensyn
-```
-
-Stop node (if running) Press `Ctrl+c`
-
-
-Update repository
+After setup, check your node status using the official telegram bot:
 
 ```bash
-cd rl-swarm  
-git switch main  
-git reset --hard  
-git clean -fd  
-git pull origin main
-```
-
-Restart the node
-
-```bash
-./run_rl_swarm.sh
+@gensynImpek_bot
 ```
 
 ## ❓ FAQ
