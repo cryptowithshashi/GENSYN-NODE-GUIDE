@@ -1,21 +1,12 @@
 
-# GENSYN TESTNET NODE GUIDE 
+# GENSYN AI RL SWARM NODE GUIDE
 
 RL Swarm is an open source system for peer-to-peer reinforcement learning over the internet. Running a swarm node allows you to train your personal model against the swarm intelligence. Each swarm performs RL reasoning as a group, with a gossiping system (Hivemind) for collaborative improvement between models. You can also connect your node to the Gensyn Testnet, to receive an on-chain identity that tracks your progress over time.
 
 RL Swarm is fully open and permissionless, meaning you can run it on a basic consumer laptop at home or on a powerful GPU in the cloud. You can also experiment with different models to see which ones perform best.
 
 
-
-
-
-
-## REQUIREMENTS
-
-
-Make sure your VPS meets the minimum requirements
-
-## PRE REQUISITES
+## System Requirements
 
 | Hardware | Requirements     |
 | :-------- | :------- | 
@@ -25,101 +16,172 @@ Make sure your VPS meets the minimum requirements
 | GPU (OPTIONAL) | Supported models include RTX 3090, RTX 4090, A100, H100 |
 
 
-## Install Dependencies
- - Update your system packages
+  
 
+## 🔧 Install Dependencies
+
+Update system packages
 ```bash
-  sudo apt-get update && sudo apt-get upgrade -y
+sudo apt update && sudo apt upgrade -y
 ```
-- Install necessary tools like Python, pip, venv, Node.js, npm, yarn, git, curl, and screen
+
+Install core tools: Python, pip, venv, curl, screen, git, lsof
 
 ```bash
-   sudo apt update && sudo apt install -y python3 python3-venv python3-pip curl screen git yarn
+sudo apt install -y python3 python3-venv python3-pip curl screen git lsof
 ```
-- Python 3.10 venv
-```bash
-   sudo apt-get install python3 python3-pip
-```   
+
+Install Node.js 20.x and npm
 
 ```bash
-   sudo apt install python3.10-venv
-```   
-- Then add Yarn’s repository and install it
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -  
+sudo apt install -y nodejs
+```
+
+Add Yarn repository and install Yarn
 
 ```bash
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo     apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -  
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list  
 sudo apt update && sudo apt install -y yarn
-
-```   
-## Clone the RL-Swarm Repository
-
-Clone the official Gensyn repository
-```bash
-  git clone https://github.com/gensyn-ai/rl-swarm.git
-  cd rl-swarm
-
-```
-Run the Node in a Screen Session
-```bash
-  screen -S gensyn
-
 ```
 
-## Set Up the Python Environment and Start the Node
-- Inside the rl-swarm directory and within the screen session
+Check versions (optional, verify installs)
 
 ```bash
-   python3 -m venv .venv
-```
-- Activate the virtual environment
-
-```bash
-   source .venv/bin/activate
+python3 --version  
+node -v  
+npm -v  
+yarn -v
 ```
 
-- Run the swarm script
+## Clone and Setup RL-Swarm
+
+Clone RL-Swarm repo
 
 ```bash
-   ./run_rl_swarm.sh
-```   
-## Login and Configuration
-
-- The script will output logs and eventually display a message like Waiting for userData.json to be created... or provide a URL. 
-- You need to access a login page, typically at `http://<Your_VPS_IP>:3000/`
-
-## Accessing the Login Page from VPS
-
-- If `http://<Your_VPS_IP>:3000/` doesn't work directly, you'll need to use SSH port forwarding (tunneling) from your local machine (not the VPS). Open a new terminal on your local computer and run.
-
-```bash
-   ssh -L 3000:localhost:3000 <your_vps_user>@<Your_VPS_IP> -p <Your_SSH_Port>
+git clone https://github.com/gensyn-ai/rl-swarm.git
 ```
-- (Replace placeholders with your VPS username, IP, and SSH port (usually 22))
-- Enter your VPS password when prompted. Keep this SSH tunnel connection open.
-- Now, open `http://localhost:3000/` in the browser on your local machine.
 
-- Login: Use your preferred method (e.g., email) on the webpage.
+Start a screen session for RL-Swarm
 
-## Monitor and Detach
+```bash
+screen -S gensyn
+```
 
-- After successful login and configuration, the terminal on your VPS (inside the `screen` session) will show installation progress and eventually start the node activity. You might see your node's name appear in the logs.
-- To detach from the screen session and let it run in the background, press `Ctrl+A`, then press `D`
-- You can reconnect later using `screen -r gensyn` (or whatever you named it).
+Go to the project directory
+
+```bash
+cd rl-swarm
+```
+
+Create and activate Python virtual environment
+
+```bash
+python3 -m venv .venv  
+source .venv/bin/activate
+```
+
+Install frontend dependencies (for modal-login)
+
+```bash
+cd modal-login  
+yarn install  
+yarn upgrade  
+yarn add next@latest viem@latest
+```
+
+Go back to main directory and run the node
+
+```bash
+cd ..  
+./run_rl_swarm.sh
+```
+
+## Login & Web Interface
+
+After node starts, a web pop-up will appear. If not, open manually:
+
+```bash
+http://localhost:3000/
+```
+
+Login with your email → Enter OTP → Get your ORG_ID from terminal → Save it
+
+### Hugging Face Prompt
 
 
-## Important Considerations:
+- When asked Push models to Hugging Face? → Type `N`
+- For W&B Integration → Type `3` for Don't visualize my results (or `1` if you want tracking)
 
-- Backup: It's recommended to back up the `swarm.pem` file located in the `rl-swarm` directory after setup, as it contains your node's identity. 
-- Troubleshooting VMs: If you encounter issues after disconnection or login problems, try stopping the script `Ctrl+C`, ensuring background processes are killed, deleting `swarm.pem` if re-logging in with a different account, and restarting the script.
+
+### Manage Node & Screen Session
+
+Detach from screen (keep node running)
+Press `Ctrl + A`, then `D`
+
+Re-attach to screen
+
+```bash
+screen -r gensyn
+```
+
+### Save `swarm.pem` file for future logins
+
+Copy file from VPS to local machine:
+
+```bash
+scp USERNAME@YOUR_IP:~/rl-swarm/swarm.pem ~/swarm.pem
+```
+
+## 🔄 Update to Latest Release (v0.4.3)
+
+Access screen session
+
+```bash
+screen -r gensyn
+```
+
+Stop node (if running) Press `Ctrl+c`
+
+
+Update repository
+
+```bash
+cd rl-swarm  
+git switch main  
+git reset --hard  
+git clean -fd  
+git pull origin main
+```
+
+Restart the node
+
+```bash
+./run_rl_swarm.sh
+```
+
+## ❓ FAQ
+
+- What is swarm.pem?
+→ It’s your key file for authenticating and managing your node. Keep it safe!
+
+- Can I run this on Mac?
+→ No. This guide is for Linux/WSL only.
+
+- How do I check my node’s logs?
+→ Re-attach to the screen session using `screen -r gensyn.`
+
 
 
 For more information check out gensyn official github page -- [CLICK HERE](https://github.com/gensyn-ai)
 
 By following these steps, you should have a running Gensyn Testnet Node on your VPS. Happy swarming!
-## ABOUT ME
 
-Twitter -- https://x.com/SHASHI522004
 
-Github -- https://github.com/cryptowithshashi
 
+## About Me
+
+- **Twitter**: [https://x.com/SHASHI522004](https://x.com/SHASHI522004)
+- **GitHub**: [https://github.com/cryptowithshashi](https://github.com/cryptowithshashi)
+- **Telegram**: [https://t.me/crypto_with_shashi](https://t.me/crypto_with_shashi)
