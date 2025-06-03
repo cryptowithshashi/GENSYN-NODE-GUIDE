@@ -174,21 +174,27 @@ Start LocalTunnel:
 lt --port 3000
 ```
 
-Copy the generated localhost URL and open it in your browser.
-Sign up, complete the login process, and you're done!
+### LocalTunnel Authentication
 
-After login, you can close this tab and go back to the main terminal (the one building the server).
+- If prompted for a password while accessing the localtunnel web interface, run:
+
+- This will generate a temporary IP/token that you’ll use as the password on the website after opening your tunnel (lt --port 3000).
+
+- Copy the generated localhost URL and open it in your browser.
+- Sign up, complete the login process, and you're done!
+
+- After login, you can close this tab and go back to the main terminal (the one building the server).
 
 
 ## Final Prompts (Back in Main Terminal)
 
-Once the server finishes downloading and setting up, you’ll see more prompts:
+- Once the server finishes downloading and setting up, you’ll see more prompts:
 
-Would you like to push models you train in the RL swarm to the Hugging Face Hub? → N
+- Would you like to push models you train in the RL swarm to the Hugging Face Hub? → N
 
-W&B Account integration → 3 (Don't visualize my results)
+- W&B Account integration → 3 (Don't visualize my results)
 
-⚠️ Copy your Node Name and Peer ID. Save them somewhere safe—these are used to check your node status later.
+- ⚠️ Copy your Node Name and Peer ID. Save them somewhere safe—these are used to check your node status later.
 
 
 
