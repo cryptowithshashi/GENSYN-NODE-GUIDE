@@ -218,10 +218,14 @@ screen -r gensyn
 
 ### Save `swarm.pem` file for future logins
 
-Copy file from VPS to local machine:
+Run these 2 commands in your vps and close your vps then open and check you will see your swarm.pem file
 
 ```bash
-scp USERNAME@YOUR_IP:~/rl-swarm/swarm.pem ~/swarm.pem
+sudo cp /root/rl-swarm/swarm.pem /home/$(logname)/
+```
+
+```bash
+sudo chown $(logname):$(logname) /home/$(logname)/swarm.pem
 ```
 
 ## Check Node Status
