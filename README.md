@@ -168,6 +168,10 @@ Install LocalTunnel:
 npm install -g localtunnel
 ```
 
+```bash
+curl https://loca.lt/mytunnelpassword
+```
+
 Start LocalTunnel:
 
 ```bash
